@@ -28,7 +28,7 @@ Default: `7821`
 
 ### `PM2_PATH`
 
-Point to a different binary path.
+Point to a different PM2 binary path.
 
 Default: `./node_modules/bin`
 

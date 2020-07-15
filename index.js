@@ -7,7 +7,8 @@ const { spawn } = require('child_process');
 const PORT = process.env.PORT || 7821;
 // By default we'll package PM2, but you can
 // supply your own if you'd like.
-const PM2_PATH = process.env.BIN || join(__dirname, 'node_modules', '.bin');
+const PM2_PATH =
+  process.env.PM2_PATH || join(__dirname, 'node_modules', '.bin');
 // 'stdout' = log anything that comes out of a pm2 process
 // 'errors' = only log errors that occur in this script
 // 'all' = log it all, baby!
