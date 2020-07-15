@@ -4,6 +4,8 @@ A PM2 WebSocket server for piping PM2 data
 
 ## Installation & usage
 
+[![NPM](https://nodei.co/npm/pm2-ws.png?downloads=true&downloadRank=true)](https://nodei.co/npm/pm2-ws/)
+
 ### Globally
 
 - Install it: `yarn global add pm2-ws` or `npm i -g pm2-ws`
