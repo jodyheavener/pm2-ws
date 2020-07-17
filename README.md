@@ -26,22 +26,16 @@ The port you'd like the WebSocket served on.
 
 Default: `7821`
 
-### `PM2_PATH`
-
-Point to a different PM2 binary path.
-
-Default: `./node_modules/bin`
-
 ### `LOG_LEVEL`
 
 Output various logs.
 
 Available levels:
 
-- `stdout` - Log anything that comes out of a pm2 process. This will be pretty busy because of pm2 logs.
-- `errors` - Only log errors that occur from within the script.
-- `all` - Log all of the above.
-- `off` - Log nothing
+- `errors` - Any errors that occur.
+- `logs` - PM2 process log output.
+- `all` - All of the above.
+- `off` - Nothing.
 
 Default: `off`
 
