@@ -1,7 +1,7 @@
 {
   "name": "pm2-ws",
-  "version": "0.1.1",
-  "description": "A PM2 WebSocket server for piping PM2 data",
+  "version": "0.1.2",
+  "description": "A WebSocket server for PM2 data",
   "main": "index.js",
   "author": "Jody Heavener",
   "license": "MPL-2.0",
