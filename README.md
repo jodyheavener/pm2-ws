@@ -28,16 +28,22 @@ Default: `7821`
 
 ### `LOG_LEVEL`
 
-Output various logs.
+Output various logs. Delimit with a comma to supply multiple.
 
 Available levels:
 
-- `errors` - Any errors that occur.
-- `logs` - PM2 process log output.
+- `errors` - Any errors that occur, with the client and this script.
+- `pm2` - Anything that PM2 commands return (this can get noisy!).
 - `all` - All of the above.
 - `off` - Nothing.
 
 Default: `off`
+
+### `INIT_LOGS`
+
+Immediately start relaying PM2 log output to the open socket. Set to `false` to disable.
+
+Default: unset (enabled)
 
 ## License
 

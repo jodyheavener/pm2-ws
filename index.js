@@ -2,19 +2,20 @@ const WebSocket = require('ws')
 const chalk = require('chalk')
 const readline = require('readline')
 const pm2 = require('pm2')
-const { logStream } = require('./pm2-utils')
+const commands = require('./pm2-commands')
 
-// 'errors' = log any errors that occur
-// 'logs' = output only pm2 logs
+// 'errors' = any errors that occur, with the client and this script
+// 'pm2' = anything that pm2 commands return, this can get noisy
 // 'all' = log it all, baby!
 // 'off' = nothing at all
-const LOG_LEVEL = process.env.LOG_LEVEL || 'off'
+const LOG_LEVEL = (process.env.LOG_LEVEL || 'off').split(',')
+const INIT_LOGS = process.env.INIT_LOGS !== 'false'
 const PORT = process.env.PORT || 7821
 
 const activeConnections = []
 
 function log(type, data) {
-  if (type === LOG_LEVEL || 'all' === LOG_LEVEL) {
+  if (LOG_LEVEL.includes(type) || LOG_LEVEL.includes('all')) {
     console.log(data)
   }
 }
@@ -53,22 +54,58 @@ function sendMessage(message) {
   })
 }
 
-function sendError(error, extras = {}) {
-  log('errors', error)
+function sendError(errorData, extras = {}) {
+  log('errors', errorData)
 
-  const errorMessage = error instanceof Error ? error.message : error
-  const message = applyEventData({}, 'error', {
-    message: errorMessage,
+  const data = applyEventData({}, 'error', {
+    error: errorData instanceof Error ? errorData.message : errorData,
     ...extras,
   })
 
-  sendMessage(message)
+  sendMessage(data)
 }
 
-function handleLog(data) {
-  log('logs', data)
-  data = applyEventData(data, 'log')
-  sendMessage(data)
+function commandSendMessage(type) {
+  return function (data) {
+    data = applyEventData(data, type)
+    log('pm2', data)
+    sendMessage(data)
+  }
+}
+
+function commandSendError(type) {
+  return function (errorData, extras = {}) {
+    extras = Object.assign(extras, { command: type })
+    sendError(errorData, extras)
+  }
+}
+
+function handleMessage(message) {
+  try {
+    const data = JSON.parse(message)
+    const { command, ...options } = data
+    if (command) {
+      if (Object.keys(commands).includes(command)) {
+        commands[command].call(
+          {
+            pm2,
+            sendMessage: commandSendMessage(command),
+            sendError: commandSendError(command),
+          },
+          options
+        )
+      } else {
+        sendError(`The command '${command}' is not supported`, {
+          data,
+        })
+      }
+    } else {
+      sendError('A valid command was not received', { data })
+    }
+  } catch (error) {
+    log('errors', error)
+    sendError('Could not parse command', { data: message })
+  }
 }
 
 function initWs() {
@@ -91,16 +128,7 @@ function initWs() {
         showActiveConnections()
       })
 
-      connection.on('message', (message) => {
-        try {
-          const data = JSON.parse(message)
-          if (data.command) {
-            // executeCommand(data.command, data.args);
-          }
-        } catch (error) {
-          sendError(error)
-        }
-      })
+      connection.on('message', handleMessage)
     })
 
     resolve()
@@ -117,6 +145,12 @@ pm2.connect(async (err) => {
   // Then start up the WebSocket server
   await initWs()
 
-  // Finally, start listening for PM2 logs
-  logStream(pm2, handleLog)
+  if (INIT_LOGS) {
+    // Finally, start listening for PM2 logs
+    commands.logs.call({
+      pm2,
+      sendMessage: commandSendMessage('logs'),
+      sendError: commandSendMessage('logs'),
+    })
+  }
 })
