@@ -1,6 +1,6 @@
 {
   "name": "pm2-ws",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "A WebSocket server for PM2 data",
   "main": "index.js",
   "author": "Jody Heavener",

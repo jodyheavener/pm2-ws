@@ -39,7 +39,7 @@ module.exports = {
         return this.sendError(error)
       }
 
-      this.sendMessage(list)
+      this.sendMessage({ message: list })
     })
   },
 }

@@ -78,7 +78,7 @@ No arguments.
 
 ### `status`
 
-Will respond with an object of all currently known (active, stopped, errored) PM2 services.
+Will respond with an object of all currently known (active, stopped, errored) PM2 processes.
 
 No arguments.
 
