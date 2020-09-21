@@ -20,13 +20,7 @@ function log(type, data) {
   }
 }
 
-function showActiveConnections(init) {
-  if (!init) {
-    // FIXME: this doesn't appear to work?
-    readline.clearLine(process.stdout, 0)
-    readline.cursorTo(process.stdout, 0)
-  }
-
+function showActiveConnections() {
   console.info(
     `pm2-ws - Active connections:`,
     chalk.bold(activeConnections.length.toString())
@@ -116,7 +110,7 @@ function initWs() {
       'pm2-ws - PM2 WebSocket opened at',
       chalk.blue.underline.bold(`ws://localhost:${PORT}`)
     )
-    showActiveConnections(true)
+    showActiveConnections()
 
     wss.on('connection', (connection) => {
       activeConnections.push(connection)
