@@ -4,29 +4,23 @@
 
 import chalk from "chalk";
 import WebSocket from "ws";
-import Commander, { Commands } from "./commander";
-
-export enum WSEvents {
-  InternalError = "InternalError",
-  InvalidCommand = "InvalidCommand",
-  ProcessesList = "ProcessesList",
-  PM2Error = "PM2Error",
-  LogData = "LogData",
-}
+import { WSEvents } from ".";
+import Commander from "./commander";
 
 export default class {
+  private host = process.env.HOST || "localhost";
   private port = parseInt(process.env.PORT || "7821");
   private server?: WebSocket.Server;
   private commander?: Commander;
   private connections: WebSocket[] = [];
 
   async init() {
-    this.server = new WebSocket.Server({ port: this.port });
+    this.server = new WebSocket.Server({ port: this.port, host: this.host });
     this.commander = new Commander(this);
 
     console.info(
       "pm2-ws - websocket server created:",
-      chalk.blue.underline.bold(`ws://localhost:${this.port}`)
+      chalk.blue.underline.bold(`ws://${this.host}:${this.port}`)
     );
 
     this.server.on("connection", (connection) => {

@@ -8,8 +8,24 @@ import clear from "clear";
 import pm2 from "pm2";
 import WebSocket from "./websocket";
 
-const { CI, CLEAR } = process.env;
-const clearOnStart = CI !== "yes" && CLEAR !== "false";
+export enum Commands {
+  GetProcesses = "GetProcesses",
+  StartLogs = "StartLogs",
+  StopLogs = "StopLogs",
+  StartProcess = "StartProcess",
+  StopProcess = "StopProcess",
+  RestartProcess = "RestartProcess",
+}
+
+export enum WSEvents {
+  InternalError = "InternalError",
+  InvalidCommand = "InvalidCommand",
+  ProcessesList = "ProcessesList",
+  PM2Error = "PM2Error",
+  LogData = "LogData",
+}
+
+const clearOnStart = process.env.CLEAR !== "false";
 const server = new WebSocket();
 
 if (clearOnStart) {

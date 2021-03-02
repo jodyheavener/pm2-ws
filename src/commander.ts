@@ -3,16 +3,8 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import pm2 from "pm2";
-import WebSocket, { WSEvents } from "./websocket";
-
-export enum Commands {
-  GetProcesses = "GetProcesses",
-  StartLogs = "StartLogs",
-  StopLogs = "StopLogs",
-  StartProcess = "StartProcess",
-  StopProcess = "StopProcess",
-  RestartProcess = "RestartProcess",
-}
+import { Commands, WSEvents } from ".";
+import WebSocket from "./websocket";
 
 interface ProcessCommandArgs {
   name: string;
@@ -141,7 +133,7 @@ export default class {
       if (error) {
         return this.server.send(WSEvents.PM2Error, {
           message: "There was a problem starting the PM2 process",
-          process: name,
+          name,
           error: error.message,
         });
       }
@@ -153,7 +145,7 @@ export default class {
       if (error) {
         return this.server.send(WSEvents.PM2Error, {
           message: "There was a problem stopping the PM2 process",
-          process: name,
+          name,
           error: error.message,
         });
       }
@@ -165,7 +157,7 @@ export default class {
       if (error) {
         return this.server.send(WSEvents.PM2Error, {
           message: "There was a problem restarting the PM2 process",
-          process: name,
+          name,
           error: error.message,
         });
       }

@@ -1,8 +1,6 @@
 # pm2-ws
 
-A WebSocket server for PM2 data
-
-**This package is not finished yet!**
+A WebSocket server for working with PM2
 
 ## Installation & usage
 
@@ -23,13 +21,21 @@ Once set up and running, you can connect to the WebSocket server:
 ```javascript
 let socket = new WebSocket("ws://localhost:7821");
 socket.onmessage = (message) => {
-  console.log(JSON.parse(message.data))
+  console.log(JSON.parse(message.data));
 };
 ```
+
+This socket will only send stringified JSON, so you should be able to `JSON.parse` anything incoming.
 
 ## Options
 
 Use environment variables to configure how the script runs.
+
+### `HOST`
+
+The host you'd like the WebSocket served on.
+
+Default: `localhost`
 
 ### `PORT`
 
@@ -37,50 +43,52 @@ The port you'd like the WebSocket served on.
 
 Default: `7821`
 
-### `LOG_LEVEL`
+### `CLEAR`
 
-Output various logs. Delimit with a comma to supply multiple.
-
-Available levels:
-
-- `errors` - Any errors that occur, with the client and this script.
-- `pm2` - Anything that PM2 commands return (this can get noisy!).
-- `all` - All of the above.
-- `off` - Nothing.
-
-Default: `off`
-
-### `INIT_LOGS`
-
-Immediately start relaying PM2 log output to the open socket. Set to `false` to disable.
+Clear the terminal when you start the script. Just to be _that_ annoying script. Set to `false` to disable.
 
 Default: unset (enabled)
 
-## Commands
+## Sending commands
 
-Once open, the socket can receive special commands to execute PM2 functions. They need to be delivered in a stringified object with the command specified under the command key and remaining params as the arguments.
+Once open, the socket can receive commands to execute PM2 functions. They need to be delivered in a JSON-stringified object with the command specified under the `command` key and remaining properties as arguments.
 
 ```javascript
-const message = JSON.stringify({
-  command: 'status',
-  foo: bar
-});
-socket.send(message);
+socket.send(
+  JSON.stringify({
+    command: "StartProcess",
+    name: "auth-server",
+  })
+);
 ```
 
-_This is going to be pretty limited until there is a greater need for more commands._
+### Commands
 
-### `logs`
+Any command you can send (and event you can receive) is enum'd, so for the most up to date list refer to [the code](./src/index.ts). Here's a brief description of what they do and need as arguments:
 
-Will start streaming PM2 log data.
+**GetProcesses**
 
-No arguments.
+Retrieves list of PM2 processes.
 
-### `status`
+**StartLogs**
 
-Will respond with an object of all currently known (active, stopped, errored) PM2 processes.
+Start streaming process logs. Depending on your active processes this can be a lot of data.
 
-No arguments.
+**StopLogs**
+
+Stop streaming process logs.
+
+**StartProcess**
+
+Starts a stopped process. Requires `name` as an argument.
+
+**StopProcess**
+
+Stops a started process. Requires `name` as an argument.
+
+**RestartProcess**
+
+Restarts any process. Requires `name` as an argument.
 
 ## License
 
