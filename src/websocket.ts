@@ -4,7 +4,7 @@
 
 import chalk from "chalk";
 import WebSocket from "ws";
-import { WSEvents } from ".";
+import { WSEvents } from "./types";
 import Commander from "./commander";
 
 export default class {

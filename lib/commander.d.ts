@@ -1,4 +1,4 @@
-import { Commands } from ".";
+import { Commands } from "./types";
 import WebSocket from "./websocket";
 interface ProcessCommandArgs {
     name: string;
@@ -6,6 +6,8 @@ interface ProcessCommandArgs {
 export default class {
     private server;
     private logging;
+    private processPingTimer;
+    private processPingInterval;
     constructor(server: WebSocket);
     run(data: {
         command?: Commands;
@@ -13,6 +15,8 @@ export default class {
     getProcesses(): void;
     startLogs(): void;
     stopLogs(): void;
+    startProcessPings(): void;
+    stopProcessPings(): void;
     startProcess({ name }: ProcessCommandArgs): void;
     stopProcess({ name }: ProcessCommandArgs): void;
     restartProcess({ name }: ProcessCommandArgs): void;

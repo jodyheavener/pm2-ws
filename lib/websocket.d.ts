@@ -1,4 +1,4 @@
-import { WSEvents } from ".";
+import { WSEvents } from "./types";
 export default class {
     private host;
     private port;

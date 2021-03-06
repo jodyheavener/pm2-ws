@@ -3,7 +3,7 @@
 // file, You can obtain one at http://mozilla.org/MPL/2.0/
 
 import pm2 from "pm2";
-import { Commands, WSEvents } from ".";
+import { Commands, WSEvents } from "./types";
 import WebSocket from "./websocket";
 
 interface ProcessCommandArgs {
@@ -19,6 +19,10 @@ interface BusPacket {
 
 export default class {
   private logging: boolean = false;
+  private processPingTimer: NodeJS.Timeout | null = null;
+  private processPingInterval = parseInt(
+    process.env.PROCESS_PING_INTERVAL || "5000"
+  );
 
   constructor(private server: WebSocket) {
     pm2.launchBus((error, bus) => {
@@ -92,6 +96,12 @@ export default class {
       case Commands.RestartProcess:
         this.restartProcess(input as ProcessCommandArgs);
         break;
+      case Commands.StartProcessPings:
+        this.startProcessPings();
+        break;
+      case Commands.StopProcessPings:
+        this.stopProcessPings();
+        break;
       default:
         this.server.send(WSEvents.InvalidCommand, {
           message: "Invalid command received.",
@@ -128,6 +138,22 @@ export default class {
     this.logging = false;
   }
 
+  startProcessPings() {
+    if (!this.processPingTimer) {
+      this.processPingTimer = setInterval(
+        this.getProcesses.bind(this),
+        this.processPingInterval
+      );
+    }
+  }
+
+  stopProcessPings() {
+    if (this.processPingTimer) {
+      clearInterval(this.processPingTimer);
+      this.processPingTimer = null;
+    }
+  }
+
   startProcess({ name }: ProcessCommandArgs) {
     pm2.start({ name }, (error) => {
       if (error) {
@@ -137,6 +163,8 @@ export default class {
           error: error.message,
         });
       }
+
+      setTimeout(this.getProcesses.bind(this), 1000);
     });
   }
 
@@ -149,6 +177,8 @@ export default class {
           error: error.message,
         });
       }
+
+      setTimeout(this.getProcesses.bind(this), 1000);
     });
   }
 
@@ -161,6 +191,8 @@ export default class {
           error: error.message,
         });
       }
+
+      setTimeout(this.getProcesses.bind(this), 1000);
     });
   }
 }
