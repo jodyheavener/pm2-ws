@@ -49,6 +49,12 @@ Clear the terminal when you start the script. Just to be _that_ annoying script.
 
 Default: unset (enabled)
 
+### `PROCESS_PING_INTERVAL`
+
+Milliseconds between each Process Ping (a websocket event that transmits the status of processes). Set to `0` to disable entirely, even when `Commands.StartProcessPings` is called.
+
+Default: 5000
+
 ## Sending commands
 
 Once open, the socket can receive commands to execute PM2 functions. They need to be delivered in a JSON-stringified object with the command specified under the `command` key and remaining properties as arguments.
