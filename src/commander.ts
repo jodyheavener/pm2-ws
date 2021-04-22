@@ -39,6 +39,7 @@ export default class {
         }
 
         this.server.send(WSEvents.LogData, {
+          message: packet.data,
           timestamp: packet.at,
           type: "process_event",
           status: packet.event,
@@ -72,12 +73,12 @@ export default class {
 
   run(
     data: {
-      command?: Commands;
+      event?: Commands;
     } & Record<string, any>
   ) {
-    const { command, ...input } = data;
+    const { event, ...input } = data;
 
-    switch (command) {
+    switch (event) {
       case Commands.GetProcesses:
         this.getProcesses();
         break;
@@ -104,7 +105,7 @@ export default class {
         break;
       default:
         this.server.send(WSEvents.InvalidCommand, {
-          message: "Invalid command received.",
+          message: "Invalid event received.",
           received: data,
         });
         break;
@@ -139,7 +140,7 @@ export default class {
   }
 
   startProcessPings() {
-    if (!this.processPingTimer) {
+    if (!this.processPingTimer && this.processPingInterval !== 0) {
       this.processPingTimer = setInterval(
         this.getProcesses.bind(this),
         this.processPingInterval
