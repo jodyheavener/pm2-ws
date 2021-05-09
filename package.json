@@ -1,6 +1,6 @@
 {
   "name": "pm2-ws",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A WebSocket server for working with PM2",
   "author": "Jody Heavener <j.heavener@gmail.com>",
   "license": "MPL-2.0",

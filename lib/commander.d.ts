@@ -10,7 +10,7 @@ export default class {
     private processPingInterval;
     constructor(server: WebSocket);
     run(data: {
-        command?: Commands;
+        event?: Commands;
     } & Record<string, any>): void;
     getProcesses(): void;
     startLogs(): void;
